@@ -39,7 +39,6 @@ func strver(ver uint8) string {
 // playlist consists of variants.
 func NewMasterPlaylist() *MasterPlaylist {
 	p := new(MasterPlaylist)
-	p.ver = minver
 	return p
 }
 
@@ -58,7 +57,7 @@ func (p *MasterPlaylist) Append(uri string, chunklist *MediaPlaylist, params Var
 		// 1, but playback on older clients may not be desirable.  A server MAY
 		// consider indicating a EXT-X-VERSION of 4 or higher in the Master
 		// Playlist but is not required to do so.
-		version(&p.ver, 4) // so it is optional and in theory may be set to ver.1
+		//version(&p.ver, 4) // so it is optional and in theory may be set to ver.1
 		// but more tests required
 	}
 	p.buf.Reset()
