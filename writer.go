@@ -78,9 +78,10 @@ func (p *MasterPlaylist) Encode() *bytes.Buffer {
 	if p.ver != 0 {
 		p.buf.WriteString("#EXT-X-VERSION:")
 		p.buf.WriteString(strver(p.ver))
-		p.buf.WriteRune('\n')
 	}
-
+	
+	p.buf.WriteRune('\n')
+	
 	if p.IndependentSegments() {
 		p.buf.WriteString("#EXT-X-INDEPENDENT-SEGMENTS\n")
 	}
