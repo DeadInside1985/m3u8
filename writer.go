@@ -158,7 +158,12 @@ func (p *MasterPlaylist) Encode() *bytes.Buffer {
 				}
 				p.buf.WriteRune('\n')
 			}
+			
+			if len(pl.Alternatives) > 0 {
+				p.buf.WriteRune('\n')
+			}	
 		}
+		
 		if pl.Iframe {
 			p.buf.WriteString("#EXT-X-I-FRAME-STREAM-INF:")
 			p.buf.WriteString("BANDWIDTH=")
