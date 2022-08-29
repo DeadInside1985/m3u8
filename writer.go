@@ -78,7 +78,6 @@ func (p *MasterPlaylist) Encode() *bytes.Buffer {
 	if p.ver != 0 {
 		p.buf.WriteString("#EXT-X-VERSION:")
 		p.buf.WriteString(strver(p.ver))
-		p.buf.WriteRune('\n')
 	}
 		
 	if p.IndependentSegments() {
@@ -159,12 +158,14 @@ func (p *MasterPlaylist) Encode() *bytes.Buffer {
 				}
 				p.buf.WriteRune('\n')
 			}
-			
+
 			if len(pl.Alternatives) > 0 {
 				p.buf.WriteRune('\n')
-			}	
+			}
 		}
-		
+	}
+	
+	for _, pl := range p.Variants {
 		if pl.Iframe {
 			p.buf.WriteString("#EXT-X-I-FRAME-STREAM-INF:")
 			p.buf.WriteString("BANDWIDTH=")
