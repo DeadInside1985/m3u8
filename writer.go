@@ -65,13 +65,16 @@ func (p *MasterPlaylist) Append(uri string, chunklist *MediaPlaylist, params Var
 
 // ResetCache resetes the playlist' cache.
 func (p *MasterPlaylist) ResetCache() {
-	p.buf.Reset()
+	putBuffer(p.buf)
 }
 
 // Encode generates the output in M3U8 format.
 func (p *MasterPlaylist) Encode() *bytes.Buffer {
+	buffer := getBuffer()
+        p.buf = buffer
+	
 	if p.buf.Len() > 0 {
-		return &p.buf
+		panic(errors.New("buffer not empty"))
 	}
 
 	p.buf.WriteString("#EXTM3U\n")
@@ -278,7 +281,7 @@ func (p *MasterPlaylist) Encode() *bytes.Buffer {
 		}
 	}
 
-	return &p.buf
+	return p.buf
 }
 
 // SetCustomTag sets the provided tag on the master playlist for its TagName
@@ -401,14 +404,17 @@ func (p *MediaPlaylist) Slide(uri string, duration float64, title string) {
 // ResetCache resets playlist cache. Next called Encode() will
 // regenerate playlist from the chunk slice.
 func (p *MediaPlaylist) ResetCache() {
-	p.buf.Reset()
+	putBuffer(p.buf)
 }
 
 // Encode generates output in M3U8 format. Marshal `winsize` elements
 // from bottom of the `segments` queue.
 func (p *MediaPlaylist) Encode() *bytes.Buffer {
+	buffer := getBuffer()
+        p.buf = buffer
+	
 	if p.buf.Len() > 0 {
-		return &p.buf
+		panic(errors.New("buffer not empty"))
 	}
 
 	p.buf.WriteString("#EXTM3U\n#EXT-X-VERSION:")
@@ -714,7 +720,7 @@ func (p *MediaPlaylist) Encode() *bytes.Buffer {
 	if p.Closed {
 		p.buf.WriteString("#EXT-X-ENDLIST\n")
 	}
-	return &p.buf
+	return p.buf
 }
 
 // String here for compatibility with Stringer interface For example
