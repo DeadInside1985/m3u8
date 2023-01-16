@@ -123,7 +123,7 @@ type MediaPlaylist struct {
 	head             uint // head of FIFO, we add segments to head
 	tail             uint // tail of FIFO, we remove segments from tail
 	count            uint // number of segments added to the playlist
-	buf              bytes.Buffer
+	buf              *bytes.Buffer
 	ver              uint8
 	Key              *Key // EXT-X-KEY is optional encryption key displayed before any segments (default key for the playlist)
 	Map              *Map // EXT-X-MAP is optional tag specifies how to obtain the Media Initialization Section (default map for the playlist)
@@ -149,7 +149,7 @@ type MasterPlaylist struct {
 	Variants            []*Variant
 	Args                string // optional arguments placed after URI (URI?Args)
 	CypherVersion       string // non-standard tag for Widevine (see also WV struct)
-	buf                 bytes.Buffer
+	buf                 *bytes.Buffer
 	ver                 uint8
 	independentSegments bool
 	Custom              map[string]CustomTag
