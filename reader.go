@@ -19,10 +19,28 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
 var reKeyValue = regexp.MustCompile(`([a-zA-Z0-9_-]+)=("[^"]+"|[^",]+)`)
+
+var byteBufferPool = sync.Pool{
+       New: func() interface{} {
+               return bytes.NewBuffer(make([]byte, 0, 4*4096))
+       },
+}
+
+func getBuffer() *bytes.Buffer {
+       return byteBufferPool.Get().(*bytes.Buffer)
+}
+
+func putBuffer(b *bytes.Buffer) {
+       if b != nil {
+               b.Reset()
+               byteBufferPool.Put(b)
+       }
+}
 
 // TimeParse allows globally apply and/or override Time Parser function.
 // Available variants:
@@ -146,8 +164,8 @@ func (p *MediaPlaylist) decode(buf *bytes.Buffer, strict bool) error {
 
 // Decode detects type of playlist and decodes it. It accepts bytes
 // buffer as input.
-func Decode(data bytes.Buffer, strict bool) (Playlist, ListType, error) {
-	return decode(&data, strict, nil)
+func Decode(reader io.Reader, strict bool) (Playlist, ListType, error) {
+	return decode(reader, strict, nil)
 }
 
 // DecodeFrom detects type of playlist and decodes it. It accepts data
@@ -181,7 +199,7 @@ func DecodeWith(input interface{}, strict bool, customDecoders []CustomDecoder) 
 
 // Detect playlist type and decode it. May be used as decoder for both
 // master and media playlists.
-func decode(buf *bytes.Buffer, strict bool, customDecoders []CustomDecoder) (Playlist, ListType, error) {
+func decode(reader io.Reader, strict bool, customDecoders []CustomDecoder) (Playlist, ListType, error) {
 	var eof bool
 	var line string
 	var master *MasterPlaylist
@@ -203,6 +221,13 @@ func decode(buf *bytes.Buffer, strict bool, customDecoders []CustomDecoder) (Pla
 		media = media.WithCustomDecoders(customDecoders).(*MediaPlaylist)
 		master = master.WithCustomDecoders(customDecoders).(*MasterPlaylist)
 		state.custom = make(map[string]CustomTag)
+	}
+	
+	buf := getBuffer()
+	defer putBuffer(buf)
+
+	if _, err := buf.ReadFrom(reader); err != nil {
+		return nil, 0, err
 	}
 
 	for !eof {
