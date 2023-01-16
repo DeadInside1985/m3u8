@@ -39,6 +39,7 @@ func strver(ver uint8) string {
 // playlist consists of variants.
 func NewMasterPlaylist() *MasterPlaylist {
 	p := new(MasterPlaylist)
+	p.buf = bytes.NewBuffer([]byte{})
 	return p
 }
 
@@ -330,6 +331,7 @@ func NewMediaPlaylist(winsize uint, capacity uint) (*MediaPlaylist, error) {
 	p := new(MediaPlaylist)
 	p.ver = minver
 	p.capacity = capacity
+	p.buf = bytes.NewBuffer([]byte{})
 	if err := p.SetWinSize(winsize); err != nil {
 		return nil, err
 	}
