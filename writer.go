@@ -362,10 +362,14 @@ func (p *MediaPlaylist) Remove() (err error) {
 	return nil
 }
 
+var playlistPool = sync.Pool{
+	New: func() interface{} { return new(MediaSegment) },
+}
+
 // Append general chunk to the tail of chunk slice for a media playlist.
 // This operation does reset playlist cache.
 func (p *MediaPlaylist) Append(uri string, duration float64, title string) error {
-	seg := new(MediaSegment)
+	seg := playlistPool.Get().(*MediaSegment)
 	seg.URI = uri
 	seg.Duration = duration
 	seg.Title = title
@@ -406,6 +410,9 @@ func (p *MediaPlaylist) Slide(uri string, duration float64, title string) {
 // ResetCache resets playlist cache. Next called Encode() will
 // regenerate playlist from the chunk slice.
 func (p *MediaPlaylist) ResetCache() {
+	for _, s := range p.Segments {
+		playlistPool.Put(s)
+	}
 	putBuffer(p.buf)
 }
 
