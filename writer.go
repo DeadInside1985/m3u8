@@ -412,7 +412,9 @@ func (p *MediaPlaylist) Slide(uri string, duration float64, title string) {
 // regenerate playlist from the chunk slice.
 func (p *MediaPlaylist) ResetCache() {
 	for _, s := range p.Segments {
-		playlistPool.Put(s)
+		if s != nil {
+			playlistPool.Put(s)
+		}
 	}
 	putBuffer(p.buf)
 }
