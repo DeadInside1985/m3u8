@@ -27,7 +27,7 @@ var reKeyValue = regexp.MustCompile(`([a-zA-Z0-9_-]+)=("[^"]+"|[^",]+)`)
 
 var byteBufferPool = sync.Pool{
        New: func() interface{} {
-               return bytes.NewBuffer(make([]byte, 0, 4*4096))
+               return bytes.NewBuffer(make([]byte, 0, 16*4096))
        },
 }
 
