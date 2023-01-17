@@ -19,6 +19,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"sync"
 )
 
 // ErrPlaylistFull declares the playlist error.
